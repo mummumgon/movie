@@ -2,12 +2,13 @@ import { useState,useEffect } from "react";
 import styled from "styled-components";
 import { motion , useScroll ,useAnimation} from "framer-motion";
 import { Link } from "react-router-dom";
+
 const MHeader = styled(motion.header)`
     position: fixed;
     left: 0;
     top: 0;
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 40px;
     z-index: 100;
 `;
 const Nav = styled.nav`
@@ -74,8 +75,8 @@ const logoVariants = {
   },
 };
 const headBgAni={
-    up:{background:'linear-gradient(180deg, black -20%, transparent 65%)'},
-    down:{background:'linear-gradient(180deg, black 100%, transparent 100%)',transition:{duration:0.1,}}
+    up:{background:'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0))'},
+    down:{background:'linear-gradient(rgba(0,0,0,1), rgba(0,0,0,1))',transition:{duration:0.1,}}
 }
 
 function Header(){

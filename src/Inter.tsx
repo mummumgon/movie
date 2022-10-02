@@ -120,7 +120,7 @@ export interface IReview{
 export interface ISerch{
     results:[{
     adult: boolean,
-    backdrop_path: string,
+    backdrop_path?: string,
     genre_ids: [
       number,
       number

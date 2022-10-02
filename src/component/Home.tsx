@@ -1,4 +1,4 @@
-import { useEffect  } from "react";
+import { useEffect ,useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getMovieNowPlaying,getMovieUpcoming,getMovieTopRated,getMoviePopular, getDtail } from "../api";
@@ -12,23 +12,49 @@ import { useLocation, useMatch } from "react-router-dom";
 const Wrap = styled.div`
     min-height: 200vh;
 `;
-const Banner = styled.div<{bgimg:string}>`
-    height: 80vh;
-    padding: 40px;
+const Banner = styled.div`
+    position: relative;
+    padding: 35% 40px 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
-    background:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8)), url(${props =>props.bgimg});
+    justify-content: end;
     background-size: cover;
-    *{
-        color: ${props=>props.theme.textColor};
+    ::before{
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8));
+    }
+    img{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
     }
     div{
-        width: 50%;
-        .title{ font-size: 60px; font-weight:bold}
-        .desc{font-size: 20px; padding:20px 0}
+        position: relative;
+        padding-bottom: 5vw;
+        width: 70%;
+        z-index: 3;
+        .title{ font-size: 60px; font-weight:bold; word-break: keep-all;}
+        .desc{font-size: 16px; padding:20px 0; line-height:1.4; word-break: keep-all;}
+       
     }
+    @media only screen and (max-width: 1000px) {
+        div{
+        width: 70%;
+        .title{ font-size: 40px; word-break: keep-all;}
+        .desc{ font-size: 14px; word-break: keep-all;}
+       
+    }
+  }
 `;
 const Section = styled(motion.section)`
     padding: 0 40px;
@@ -43,22 +69,27 @@ function Home(){
     const movieDetailMatch = useMatch('moive/:nick/:movieId');
     const urlnick = movieDetailMatch?.params.nick;
     const urlmovieId = movieDetailMatch?.params.movieId;
+    const [random , setRandom] = useState(0);
     const {isLoading: nowLoding , data: now} = useQuery<IgetAllMovies>(['movie','nowplay'],getMovieNowPlaying);
     const {isLoading: upLoding , data: up} = useQuery<IgetAllMovies>(['movie','upcoming'],getMovieUpcoming);
     const {isLoading: topLoding , data: top} = useQuery<IgetAllMovies>(['movie','topRated'],getMovieTopRated);
     const {isLoading: popLoding , data: pop} = useQuery<IgetAllMovies>(['movie','popular'],getMoviePopular);
     
-    const len = Number(now?.results.length);
-    const random = Math.floor(Math.random() * len);
     const totalArr = now?.results.concat(up?.results as [],top?.results as [],pop?.results as []);
     const ClickModal = urlmovieId && totalArr?.find(movie => movie.id === +urlmovieId);
-    
-    const loading = nowLoding || upLoding|| topLoding || popLoding;
+    const len = Number(now?.results.length);
+    const loading = nowLoding || upLoding || topLoding || popLoding;
+    useEffect(()=>{
+        const len = Number(now?.results.length);
+        const math = Math.floor(Math.random() * len)
+        setRandom(math);
+    },[now])
     return <Wrap>
         { loading ? <p className="loding">LOADING...</p> 
         : 
         <>
-            <Banner bgimg={makeImagePath(now?.results[random].backdrop_path || '')} >
+            <Banner>
+                <img src={ makeImagePath(now?.results[random].backdrop_path || '')} alt={now?.results[random].title}/>
                 <div>
                     <h2 className="title">{now?.results[random].title}</h2>
                     <p className="desc">{now?.results[random].overview}</p>

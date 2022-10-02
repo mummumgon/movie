@@ -26,6 +26,5 @@ export function getReview(movieId:string) {
     return fetch(`${BASEPATH}/movie/${movieId}/reviews?api_key=${APIKEY}`).then((response) => response.json());
 }
 export function getSearch(keyword:string) {
-    console.log('keyword',keyword)
     return fetch(`${BASEPATH}/search/multi?api_key=${APIKEY}&language=ko-KR&query=${keyword}`).then((response) => response.json());
 }

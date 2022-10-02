@@ -32,7 +32,6 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
-	line-height: 1;
 	background-color: ${props =>props.theme.bgColor};
 	overflow-x: hidden;
 }
@@ -55,7 +54,7 @@ table {
 	border-spacing: 0;
 }
 a{text-decoration:none}
-
+button{background-color: transparent;border: 0;}
 .loding{
 	position: fixed;
 	left: 50%;
@@ -67,7 +66,8 @@ a{text-decoration:none}
 }
 .container{
 	padding: 80px 40px;
-	height:calc(100vh - 60px)
+	min-height:calc(100vh - 60px);
+	margin-bottom: 100px;
 }
 /* swiper */
 .swiper {overflow:unset}
@@ -113,7 +113,19 @@ a{text-decoration:none}
 	justify-content: space-between;
 }.top{align-items:flex-start}
 .border_left{border-left:1px solid #eee}
-.reviewList{
-
+.dummy{
+	img{
+		opacity: 0;
+		border: 0;
+	}
 }
+.searchImgList{
+	display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px , 2fr));
+    grid-gap: 4px;
+	li{
+		width: 100%;
+	}
+}
+
 `;

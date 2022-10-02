@@ -1,12 +1,13 @@
-import { useEffect , useState } from "react";
+import { useEffect  } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getMovieNowPlaying,getMovieUpcoming,getMovieTopRated,getMoviePopular,getMovieLatest } from "../api";
+import { getMovieNowPlaying,getMovieUpcoming,getMovieTopRated,getMoviePopular, getDtail } from "../api";
 import { makeImagePath } from "../Utils";
 import Sliders from "../common/Sliders";
-import {IMovie,IgetAllMovies} from '../Inter'
+import {IgetAllMovies, IMovie} from '../Inter'
 import { AnimatePresence, motion } from "framer-motion";
-import { useMatch } from "react-router-dom";
+import Modal from "./Modal";
+import { useLocation, useMatch } from "react-router-dom";
 
 const Wrap = styled.div`
     min-height: 200vh;
@@ -31,108 +32,60 @@ const Banner = styled.div<{bgimg:string}>`
 `;
 const Section = styled(motion.section)`
     padding: 0 40px;
+    height: 360px;
 `;
-const SecTitle = styled.section`
+const SecTitle = styled.h6`
     font-size: 24px;
-    padding: 16px 0;
+    padding: 24px 0;
     font-weight: bold;
 `;
-// const SlideWrap = styled.div`
-//     position: relative;
-    
-// `;
-// const SlideBox = styled(motion.div)`
-//     display: grid;
-//     gap: 4px;
-    
-//     margin-bottom: 4px;
-//     grid-template-columns: repeat(6,1fr);
-//     position: absolute;
-//     left: 0;
-//     width: 100%;
-    
-// `;
-// const Slide = styled(motion.div)`
-//     height: 200px;
-//     color: red;
-//     font-size: 50px;
-//     overflow: hidden;
-//     padding: 0.1px;
-//     :hover{
-//         transform: scale(1.2) translateY(-10%);
-//         transition: transform 0.3s;
-//         height: auto;
-//         z-index: 10;
-//     }
-
-//     &:first-child{transform-origin:left center}
-//     &:last-child{transform-origin:right center}
-// `;
-
-
-// const width = null;
-// const slidBoxVariants = {
-//     hidden:{
-//         x:window.outerWidth -10
-//     },
-//     visible:{
-//         x:0
-//     },
-//     exit:{
-//         x:-window.outerWidth +10
-//     }
-// }
-// const offset = 6;
 function Home(){
+    const movieDetailMatch = useMatch('moive/:nick/:movieId');
+    const urlnick = movieDetailMatch?.params.nick;
+    const urlmovieId = movieDetailMatch?.params.movieId;
     const {isLoading: nowLoding , data: now} = useQuery<IgetAllMovies>(['movie','nowplay'],getMovieNowPlaying);
+    const {isLoading: upLoding , data: up} = useQuery<IgetAllMovies>(['movie','upcoming'],getMovieUpcoming);
+    const {isLoading: topLoding , data: top} = useQuery<IgetAllMovies>(['movie','topRated'],getMovieTopRated);
+    const {isLoading: popLoding , data: pop} = useQuery<IgetAllMovies>(['movie','popular'],getMoviePopular);
+    
     const len = Number(now?.results.length);
     const random = Math.floor(Math.random() * len);
+    const totalArr = now?.results.concat(up?.results as [],top?.results as [],pop?.results as []);
+    const ClickModal = urlmovieId && totalArr?.find(movie => movie.id === +urlmovieId);
     
-    
-    const loading = nowLoding;
-    // const [idx , setIdx] = useState(0);
-    // const [leaving , setLeaving] = useState(false);
-    // const slideIdx = () =>{ 
-    //     if(data){
-    //         if(leaving) return; 
-    //         toggleLeaving(); 
-    //         const total = data?.results.length  ;
-    //         const maxIndx= Math.floor(total /offset) -1;
-    //         console.log(maxIndx);
-    //         setIdx(prev => (prev === maxIndx ? 0 :  prev +1))
-    //     }
-    // }
-    // const toggleLeaving = () =>{setLeaving(prev => !prev)}
- 
+    const loading = nowLoding || upLoding|| topLoding || popLoding;
     return <Wrap>
-        {loading ? <p className="loding">LOADING...</p> 
+        { loading ? <p className="loding">LOADING...</p> 
         : 
         <>
-            <Banner bgimg={makeImagePath(now?.results[random].backdrop_path || '')}>
+            <Banner bgimg={makeImagePath(now?.results[random].backdrop_path || '')} >
                 <div>
                     <h2 className="title">{now?.results[random].title}</h2>
                     <p className="desc">{now?.results[random].overview}</p>
                 </div>
             </Banner>
+         
+            <Section>
+                <SecTitle>Upcoming</SecTitle>
+                <Sliders key={['up',Date.now()]} props={up?.results} nick='up/'/>
+            </Section>
             <Section>
                 <SecTitle>Now Play</SecTitle>
-                <Sliders key={Date.now()} props={now?.results}/>
+                <Sliders key={['now',Date.now()]} props={now?.results} nick='now/'/>
             </Section>
-                 {/* <SlideWrap>
-                   <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
-                        <SlideBox variants={slidBoxVariants} initial='hidden' animate='visible' exit='exit' transition={{type:"tween" , duration:1}} key={idx}>
-                           {data?.results.slice(offset*idx, offset*idx+offset).map((movie)=> 
-                           <Slide key={movie.id}>
-                            <Imgbox bgimg={makeImagePath(movie.backdrop_path,'w500')}/>
-                            <InfoBox>
-                               <h6><span>{movie.title}</span><button>▽</button></h6>
-                                <p>{movie.vote_average}</p>
-                            </InfoBox>
-                            </Slide>)}
-                        </SlideBox>
-                    </AnimatePresence> 
-                </SlideWrap>*/}
-
+            <Section>
+                <SecTitle>Top Rated</SecTitle>
+                <Sliders key={['top',Date.now()]} props={top?.results} nick='top/'/>
+            </Section> 
+            <Section>
+                <SecTitle>Popular</SecTitle>
+                <Sliders key={['pop',Date.now()]} props={pop?.results} nick='pop/'/>
+            </Section>
+           <AnimatePresence>
+            {ClickModal && 
+                <Modal props={ClickModal} nick={urlnick} movieId={urlmovieId} key={urlmovieId+urlnick}></Modal>
+                }
+            </AnimatePresence>
         </>
         }
     </Wrap>;

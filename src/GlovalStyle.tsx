@@ -65,20 +65,23 @@ a{text-decoration:none}
 	font-size:30px;
 	color: ${props =>props.theme.textColor};
 }
-
+.container{
+	padding: 80px 40px;
+	height:calc(100vh - 60px)
+}
 /* swiper */
 .swiper {overflow:unset}
 .swiper-slide{
+	position: relative;
 	width: 300px;
 	height: 200px;
     color: red;
-    font-size: 50px;
     overflow: hidden;
     padding: 0.1px;
 	:hover{
-		transform: scale(1.1) translateY(-10%);
+		transform: scale(1.04) translateY(-15%);
         transition: transform 0.3s;
-        height: auto;
+        height: 300px;
         z-index: 10;
     }
 
@@ -96,5 +99,21 @@ a{text-decoration:none}
 	font-weight: bold;
 	letter-spacing: -0.5px;
 	word-break:keep-all;
+}
+
+.section{padding:40px; margin:40px 0}
+.grid{
+	display: grid;
+	grid-template-columns: var(left) var(right);
+	gap: var(gap);
+}
+.btw_flex{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}.top{align-items:flex-start}
+.border_left{border-left:1px solid #eee}
+.reviewList{
+
 }
 `;

@@ -1,7 +1,8 @@
 import { useState,useEffect } from "react";
 import styled from "styled-components";
 import { motion , useScroll ,useAnimation} from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 const MHeader = styled(motion.header)`
     position: fixed;
@@ -38,7 +39,7 @@ const Gitem = styled.li`
         line-height: 40px;
     }
 `;
-const Search = styled.div`
+const Search = styled.form`
     display: flex;
     align-items: center;
     justify-content: center;
@@ -79,7 +80,11 @@ const headBgAni={
     down:{background:'linear-gradient(rgba(0,0,0,1), rgba(0,0,0,1))',transition:{duration:0.1,}}
 }
 
+interface ISearch{
+    searchtext:string
+}
 function Header(){
+    const navigate  =  useNavigate();
     const [serch , setSerch] = useState(false);
     const openInp = () => setSerch((state) => !state);
     const {scrollY} = useScroll();
@@ -92,8 +97,13 @@ function Header(){
             navAni.start('up');
         }
         })
-    },[scrollY])
-
+    },[scrollY]);
+    const { register , handleSubmit , setValue} = useForm<ISearch>();
+    const onSubmit = (searchtext:ISearch) =>{
+        setValue('searchtext','');
+        navigate(`search?keyword=${searchtext.searchtext}`);
+    }
+    //search?keyword=:text
     return <MHeader variants={headBgAni} initial='up' animate={navAni}>
     <Nav>
         <HeadBox>
@@ -114,9 +124,9 @@ function Header(){
             </Gnb>
         </HeadBox>
         <HeadBox>
-            <Search>
-                <SearchInp initial={{scaleX:0}} animate={{scaleX:serch ? 1 : 0}} placeholder="검색어를 적어주세요"/>
-                <SearchBtn onClick={openInp} initial={{right:0}} animate={{right:serch ? '192px' : 0}}>
+            <Search onSubmit={handleSubmit(onSubmit)}>
+                <SearchInp {...register('searchtext')} initial={{scaleX:0}} animate={{scaleX:serch ? 1 : 0}} placeholder="검색어를 적어주세요"/>
+                <SearchBtn type='button' onClick={openInp} initial={{right:0}} animate={{right:serch ? '192px' : 0}}>
                     <svg
                         fill="currentColor"
                         viewBox="0 0 20 20"

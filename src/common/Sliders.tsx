@@ -1,22 +1,25 @@
-import React, { useRef, useState, useEffect } from "react";
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 
-// import required modules
-// import { Pagination } from "swiper";
 import { makeImagePath } from "../Utils";
 import styled from "styled-components";
-import { useMatch, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import {IMovie} from '../Inter'
 const Imgbox = styled.p<{bgimg:string}>`
     height: 200px;
     background-image: url(${props=>props.bgimg});
     background-size: cover;
     background-position: center;
+`;
+const NoImgbox = styled.p`
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  border: 1px solid #999;
+  background-color: #333;
 `;
 const InfoBox = styled.div`
     display: flex;
@@ -48,88 +51,22 @@ const InfoBox = styled.div`
     }
     p{
         align-self: flex-end;
-        width: 40px;
+        width: 80px;
         border-radius: 50em;
         background-color: red;
         text-align: center;
         padding: 2px 0 5px;
     }
 `;
-const Slide = styled(motion.div)``;
+const Slide = styled(motion.div)`
 
-const MovieDetailBox = styled(motion.div)`
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 101;
-   -ms-overflow-style: none;
-    ::-webkit-scrollbar{
-      display:none;
-    }
-
-`
-// const ModalBg = styled(motion.div)`
-//     position: fixed;
-//     left: 0;
-//     top: 0;
-//     width: 100%;
-//     height: 100%;
-//     background-color: rgba(0,0,0,0.5);
-//     z-index: 1;
-// `;
-const Detail = styled.div`
-        position: relative;
-        display: flex;
-        justify-content: center;
-        height: 100%;
-        width:100%;
-        padding: 10vh 0;
-        z-index: 2;
-        background-color: rgba(0,0,0,0.5);
-        box-sizing: unset;
-        div{
-          width: 80%;
-          height:100%;
-          background-color: green;
-            div{
-                padding: 10vw;
-                background-color: green;
-            }
-        } 
 `;
-
-const boxVariants = {
-  initial:{
-    opacity:0,
-    scale:0,
-  },
-  visible:{
-    opacity:1,
-    scale:1
-  },
-  leaving:{
-    opacity:0,
-    scale:0,
-    y: 1000,
-  }
-}
-export default function Sliders({props}:any) {
-  // const len = Number(props?.length);
-  // const random = Math.floor(Math.random() * len);
+export default function Sliders({props, nick}:any) {
   const native = useNavigate();
-  const onClick = (movieId:number) =>{
-    native(`/moive/${movieId}`);
+  const onClick = (nick:string,movieId:number) =>{
+    native(`/moive/${nick}${movieId}`);
     document.body.classList.add('hidden');
   }
-  const movieDetailClose = () => {
-    document.body.classList.remove('hidden');
-    native('/');
-  }
-  const movieDetailMatch = useMatch('moive/:movieId');
-  console.log(movieDetailMatch);    
   return (
     <>
     <AnimatePresence>
@@ -139,33 +76,22 @@ export default function Sliders({props}:any) {
         pagination={{
           clickable: true,
         }}
-        // modules={[Pagination]}
         className="mySwiper"
       >
-        {props.map((data:any)=>(
-          <SwiperSlide style={{backgroundImage:`url(${makeImagePath(data.poster_path)})`, backgroundSize:'cover', backgroundPosition:'center center'}}>
-            <Slide layoutId={data.id}>
-              <Imgbox bgimg={makeImagePath(data.backdrop_path,'w500')}/>
-              <InfoBox>
-                  <h6><span>{data.title}</span><button onClick={()=>onClick(data.id)}>▽</button></h6>
-                  <p>{data.vote_average}</p>
-              </InfoBox>
-            </Slide>
+        {props.map((data:IMovie)=>(
+          <SwiperSlide key={data.id} style={{backgroundSize:'cover', backgroundPosition:'center center'}}>
+              <Slide layoutId={`${nick}${data.id}`}>
+                {data?.backdrop_path === null ? <NoImgbox>{data.title}</NoImgbox> : <Imgbox bgimg={makeImagePath(data.backdrop_path,'w500')}/>}
+                <InfoBox>
+                      <h6><span>{data.title}</span><button onClick={()=>onClick(nick,data.id)}>▽</button></h6>
+                      <p>평점: {data.vote_average}점</p>
+                </InfoBox>
+              </Slide>
           </SwiperSlide>
         ))}
         
       </Swiper>
       </AnimatePresence>
-      <AnimatePresence>
-          {movieDetailMatch ? 
-           <MovieDetailBox variants={boxVariants} initial='initial' animate='visible' exit='leaving' layoutId={`${movieDetailMatch.params.movieId}`}>
-              <Detail onClick={movieDetailClose}>
-                  <div onClick={(e) => e.stopPropagation()}>
-                      <div></div>
-                  </div>
-              </Detail>
-          </MovieDetailBox>: null}
-      </AnimatePresence> 
     </>
   );
 }

@@ -72,6 +72,9 @@ button{background-color: transparent;border: 0;}
 	padding: 80px 40px;
 	min-height:calc(100vh - 60px);
 	margin-bottom: 100px;
+	@media only screen and (max-width: 630px) {
+		padding: 60px 20px;
+	}
 }
 .movieTitle{
 		position: absolute;
@@ -168,7 +171,7 @@ button{background-color: transparent;border: 0;}
 }
 .searchImgList{
 	display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px , 2fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px , 2fr));
     grid-gap: 4px;
 	li{
 		width: 100%;

@@ -7,7 +7,6 @@ import { getSearch } from "../api";
 import { allCon } from "../atom";
 import SearchList from "../common/SearchList";
 import { ISerch } from "../Inter";
-import { makeImagePath } from '../Utils'
 
 const ImgBoxList = styled.ul`
 
@@ -27,7 +26,6 @@ const Title = styled.h3`
 
 const Word = styled.p`
     padding: 20px 0;
-
 `;
 function Search(){
     const location = useLocation();
@@ -47,13 +45,13 @@ function Search(){
                 <Title>Movie</Title>
                 <ImgBoxList className="searchImgList">
                     {data?.results.map((search)=> 
-                    search.media_type === 'movie' && <SearchList title={search.title || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
+                    search.media_type === 'movie' && <SearchList key={Date.now()+search.id}  title={search.title || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
                     )}
                 </ImgBoxList>
                 <Title>Tv Show</Title>
                 <ImgBoxList className="searchImgList">
                     {data?.results.map((search)=> 
-                    search.media_type === 'tv' && <SearchList title={search.name || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
+                    search.media_type === 'tv' && <SearchList key={Date.now()+search.id+'aa'}  title={search.name || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
                     )}
                 </ImgBoxList>
                 </>

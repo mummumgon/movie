@@ -22,6 +22,7 @@ const Banner = styled.div<{bgImg:string}>`
     align-items: flex-start;
     justify-content: center;
     background-size: cover;
+    background-position: center;
     background-image: url(${props=>props.bgImg});
     ::before{
         content: "";
@@ -41,7 +42,10 @@ const Banner = styled.div<{bgImg:string}>`
         height: 100%;
         z-index: 1;
     }
-
+    @media only screen and (max-width: 630px) {
+        padding: 0;
+        height: 300px;
+    }
   
 `;
 const Main = styled.div`
@@ -55,6 +59,7 @@ const Main = styled.div`
 const Section = styled(motion.section)`
     padding: 0 40px;
     height: 360px;
+    overflow-x: hidden;
     @media only screen and (max-width: 630px) {
         padding: 0 20px;
         height: 250px;

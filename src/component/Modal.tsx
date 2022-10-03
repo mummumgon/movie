@@ -143,6 +143,7 @@ const BtmBox = styled.div`
       li{
       padding: 6px 0;
       line-height: 1.5;
+      word-break: break-all;
     }
   }
     p{
@@ -225,7 +226,6 @@ function Modal({ props ,nick ,movieId}:any){
       const {isLoading:detailLoding , data:detail} = useQuery<IDetail>(['movie','modal'],()=>getDtail(movieId));
       const {isLoading:videoLoding , data:video} = useQuery<IYoutube>(['movie','video'],()=>getvideo(movieId));
       const {isLoading:reviewLoding , data:review} = useQuery<IReview>(['movie','review'],()=>getReview(movieId));
-      console.log('review',review);
       const loading = detailLoding || videoLoding || reviewLoding;
     return <>   
     <AnimatePresence>

@@ -22,8 +22,8 @@ const MHeader = styled(motion.header)`
             position: fixed;
             left: 100%;
             top: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-color: #333;
             transition: all 0.3s;
         }
@@ -230,8 +230,8 @@ function Header(){
             navAni.start('up');
         }
         })
-        setResizeWidth(width);
     },[scrollY,width]);
+    setResizeWidth(width);
     const onSubmit = (searchtext:ISearch) =>{
         setValue('searchtext','');
         navigate(`search?keyword=${searchtext.searchtext}`);

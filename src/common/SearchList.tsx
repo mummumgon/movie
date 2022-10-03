@@ -1,7 +1,6 @@
 import {useState} from "react";
 import styled from "styled-components";
 import Modal from "../component/Modal";
-import { ISerch } from "../Inter";
 import { makeImagePath } from "../Utils";
 
 const Li = styled.li`
@@ -34,9 +33,10 @@ function SearchList({bgImg,title, props,nick,movieId}:any){
     const [modal , setModal] = useState(false);
     const onClick = () =>{
         setModal(true);
+        document.body.classList.add('hidden'); 
     }
     return <>
-        <Li key={Date.now()+title} onClick={onClick}>
+        <Li onClick={onClick}>
             <ImageBox>
                 <img src={makeImagePath(bgImg,'w300')} alt={title} />
             </ImageBox>

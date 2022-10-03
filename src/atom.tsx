@@ -20,7 +20,4 @@ export const allCon = atom<IMovie[]>({
     key:'contents',
     default:[]
 });
-export const modalState = atom<boolean>({
-    key:'modal',
-    default:false,
-});
+

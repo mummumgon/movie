@@ -4,22 +4,25 @@ import styled from "styled-components";
 import { getMovieNowPlaying,getMovieUpcoming,getMovieTopRated,getMoviePopular, getDtail } from "../api";
 import { makeImagePath } from "../Utils";
 import Sliders from "../common/Sliders";
-import {IgetAllMovies, IMovie} from '../Inter'
+import {IgetAllMovies} from '../Inter'
 import { AnimatePresence, motion } from "framer-motion";
 import Modal from "./Modal";
-import { useLocation, useMatch } from "react-router-dom";
-
+import { useMatch } from "react-router-dom";
+import { resize } from "../atom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 const Wrap = styled.div`
-    min-height: 200vh;
+    min-height: 100vh;
+    padding-bottom: 50px;
 `;
-const Banner = styled.div`
+const Banner = styled.div<{bgImg:string}>`
     position: relative;
-    padding: 35% 40px 0;
+    padding: 40% 40px 0;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: end;
+    justify-content: center;
     background-size: cover;
+    background-image: url(${props=>props.bgImg});
     ::before{
         content: "";
         position: absolute;
@@ -28,7 +31,7 @@ const Banner = styled.div`
         width: 100%;
         height: 100%;
         z-index: 2;
-        background:linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.8));
+        background:linear-gradient(rgba(34,34,34,0), rgba(34,34,34,1));
     }
     img{
         position: absolute;
@@ -38,32 +41,33 @@ const Banner = styled.div`
         height: 100%;
         z-index: 1;
     }
-    div{
-        position: relative;
-        padding-bottom: 5vw;
-        width: 70%;
-        z-index: 3;
-        .title{ font-size: 60px; font-weight:bold; word-break: keep-all;}
-        .desc{font-size: 16px; padding:20px 0; line-height:1.4; word-break: keep-all;}
-       
-    }
+
+  
+`;
+const Main = styled.div`
+    position: relative;
+    margin-top: -60px;
+    z-index: 3;
     @media only screen and (max-width: 1000px) {
-        div{
-        width: 70%;
-        .title{ font-size: 40px; word-break: keep-all;}
-        .desc{ font-size: 14px; word-break: keep-all;}
-       
+        margin-top: 0;
     }
-  }
 `;
 const Section = styled(motion.section)`
     padding: 0 40px;
     height: 360px;
+    @media only screen and (max-width: 630px) {
+        padding: 0 20px;
+        height: 250px;
+    }
 `;
 const SecTitle = styled.h6`
-    font-size: 24px;
+    font-size: 22px;
     padding: 24px 0;
     font-weight: bold;
+    @media only screen and (max-width: 630px) {
+        font-size: 16px;
+        padding: 24px 0 16px;
+    }
 `;
 function Home(){
     const movieDetailMatch = useMatch('moive/:nick/:movieId');
@@ -74,28 +78,31 @@ function Home(){
     const {isLoading: upLoding , data: up} = useQuery<IgetAllMovies>(['movie','upcoming'],getMovieUpcoming);
     const {isLoading: topLoding , data: top} = useQuery<IgetAllMovies>(['movie','topRated'],getMovieTopRated);
     const {isLoading: popLoding , data: pop} = useQuery<IgetAllMovies>(['movie','popular'],getMoviePopular);
-    
     const totalArr = now?.results.concat(up?.results as [],top?.results as [],pop?.results as []);
     const ClickModal = urlmovieId && totalArr?.find(movie => movie.id === +urlmovieId);
-    const len = Number(now?.results.length);
     const loading = nowLoding || upLoding || topLoding || popLoding;
+    const reWidth = useRecoilValue(resize);
     useEffect(()=>{
         const len = Number(now?.results.length);
         const math = Math.floor(Math.random() * len)
         setRandom(math);
     },[now])
+    
     return <Wrap>
         { loading ? <p className="loding">LOADING...</p> 
         : 
         <>
-            <Banner>
-                <img src={ makeImagePath(now?.results[random].backdrop_path || '')} alt={now?.results[random].title}/>
-                <div>
+            <Banner bgImg={makeImagePath(now?.results[random].backdrop_path || String(now?.results[random].poster_path))}>
+                {/* <img src={} alt={now?.results[random].title}/> */}
+                <div className="movieTitle">
                     <h2 className="title">{now?.results[random].title}</h2>
-                    <p className="desc">{now?.results[random].overview}</p>
+                    <p className="desc">{Number(now?.results[random].overview.length) >= 100 
+                    ?(`${now?.results[random].overview.slice(0,reWidth/9)}...`) : 
+                    (`${now?.results[random].overview.slice(0,reWidth/5)}...`) }</p>
+                    {/* <p className="desc">{now?.results[random].overview}</p> */}
                 </div>
             </Banner>
-         
+            <Main>
             <Section>
                 <SecTitle>Upcoming</SecTitle>
                 <Sliders key={['up',Date.now()]} props={up?.results} nick='up/'/>
@@ -112,10 +119,11 @@ function Home(){
                 <SecTitle>Popular</SecTitle>
                 <Sliders key={['pop',Date.now()]} props={pop?.results} nick='pop/'/>
             </Section>
+            </Main>
            <AnimatePresence>
             {ClickModal && 
                 <Modal props={ClickModal} nick={urlnick} movieId={urlmovieId} key={urlmovieId+urlnick}></Modal>
-                }
+            }
             </AnimatePresence>
         </>
         }

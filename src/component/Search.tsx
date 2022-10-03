@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useLocation, useMatch } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { getSearch } from "../api";
+import { allCon } from "../atom";
 import SearchList from "../common/SearchList";
 import { ISerch } from "../Inter";
 import { makeImagePath } from '../Utils'
@@ -16,18 +18,28 @@ const Title = styled.h3`
     padding: 20px 0 0;
     margin: 20px 0;
     border-top: 1px solid #444;
+    @media screen and (max-width: 630px) {
+        padding:10px 0;
+        margin:10px 0 0;
+        font-size: 24px;
+    }
+`;
+
+const Word = styled.p`
+    padding: 20px 0;
+
 `;
 function Search(){
     const location = useLocation();
     const keyword = new URLSearchParams(location.search).get('keyword');
-    const {isLoading, data} = useQuery<ISerch>(['keyword',keyword],() => getSearch(keyword || ''))
-    console.log(data);
+    const {isLoading, data} = useQuery<ISerch>(['keyword',keyword],() => getSearch(keyword || ''));
+    const allContents = useRecoilValue(allCon);
     useEffect(()=>{
     },[keyword])
     return <div className="container">
         {isLoading ? <p className="loding">LOADING...</p>: 
            <>  
-           <p style={{padding: '20px 0'}}>현재 검색하신 단어: {keyword}</p>
+           <Word>현재 검색하신 단어: {keyword}</Word>
              { Number(data?.results.length) < 1 ?
              <p className="loding">검색결과가 없습니다.</p>
              :
@@ -35,13 +47,13 @@ function Search(){
                 <Title>Movie</Title>
                 <ImgBoxList className="searchImgList">
                     {data?.results.map((search)=> 
-                    search.media_type === 'movie' && <SearchList title={search.title || ''} bgImg ={search.backdrop_path || search.poster_path}/>
+                    search.media_type === 'movie' && <SearchList title={search.title || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
                     )}
                 </ImgBoxList>
                 <Title>Tv Show</Title>
                 <ImgBoxList className="searchImgList">
                     {data?.results.map((search)=> 
-                    search.media_type === 'tv' && <SearchList title={search.title || ''} bgImg ={search.backdrop_path || search.poster_path}/>
+                    search.media_type === 'tv' && <SearchList title={search.name || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
                     )}
                 </ImgBoxList>
                 </>

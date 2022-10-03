@@ -1,7 +1,12 @@
+import {useState} from "react";
 import styled from "styled-components";
+import Modal from "../component/Modal";
 import { ISerch } from "../Inter";
 import { makeImagePath } from "../Utils";
 
+const Li = styled.li`
+    cursor: pointer;
+`;
 const ImageBox = styled.div`
     position: relative;
     overflow: hidden;
@@ -25,12 +30,21 @@ const Imgtitle = styled.h4`
     word-break: keep-all;
     cursor: pointer;
 `
-function SearchList({bgImg,title}:any){
-    return <li>
-        <ImageBox>
-            <img src={makeImagePath(bgImg,'w300')} alt={title} />
-        </ImageBox>
-        <Imgtitle>{title}</Imgtitle>
-    </li>
+function SearchList({bgImg,title, props,nick,movieId}:any){
+    const [modal , setModal] = useState(false);
+    const onClick = () =>{
+        setModal(true);
+    }
+    return <>
+        <Li key={Date.now()+title} onClick={onClick}>
+            <ImageBox>
+                <img src={makeImagePath(bgImg,'w300')} alt={title} />
+            </ImageBox>
+            <Imgtitle>{title}</Imgtitle>
+        </Li>
+        {modal ?
+            <Modal props={props} nick={nick} movieId={movieId} key={movieId+title+nick}></Modal> : null
+        }
+    </>
 }
 export default SearchList;

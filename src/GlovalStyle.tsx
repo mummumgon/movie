@@ -34,6 +34,10 @@ footer, header, hgroup, menu, nav, section {
 body {
 	background-color: ${props =>props.theme.bgColor};
 	overflow-x: hidden;
+	-webkit-overflow-x: hidden;
+	-ms-overflow-x: hidden;
+	-o-overflow-x: hidden;
+	width: 100vw;
 }
 body.hidden{
 	overflow: hidden;
@@ -69,6 +73,32 @@ button{background-color: transparent;border: 0;}
 	min-height:calc(100vh - 60px);
 	margin-bottom: 100px;
 }
+.movieTitle{
+		position: absolute;
+        left: 40px;
+        top: 60%;
+        width: 70%;
+        z-index: 3;
+        .title{ font-size: 40px; font-weight:bold; word-break: keep-all;}
+        .desc{font-size: 16px; padding:20px 0; line-height:1.4; word-break: keep-all;}
+       
+    @media only screen and (max-width: 1000px) {
+        width: 70%;
+        .title{ font-size:30px; word-break: keep-all;}
+        .desc{ font-size: 14px; word-break: keep-all;}
+ 
+    }
+    @media only screen and (max-width: 630px) {
+        left: 20px;
+        top: 65%;
+        .title{ font-size:20px;}
+        .desc{padding:10px 0;}
+      
+    }
+    @media only screen and (max-width: 450px) {
+        .desc{display:none}
+    }
+}
 /* swiper */
 .swiper {overflow:unset}
 .swiper-slide{
@@ -77,13 +107,28 @@ button{background-color: transparent;border: 0;}
 	height: 200px;
     color: red;
     overflow: hidden;
-    padding: 0.1px;
+    padding: 1px;
+	transition: all 0.3s;
 	:hover{
 		transform: scale(1.04) translateY(-15%);
         transition: transform 0.3s;
         height: 300px;
         z-index: 10;
     }
+	@media only screen and (max-width: 1000px) {
+		width: 250px;
+		height: auto;
+		:hover{
+			transform: scale(1) translateY(0);
+			transition: transform 0.3s;
+			height: auto;
+			z-index: 10;
+		}
+	}
+	@media only screen and (max-width: 630px) {
+		width: 200px;
+		height: 160px;
+	}
 
 }
 
@@ -101,11 +146,13 @@ button{background-color: transparent;border: 0;}
 	word-break:keep-all;
 }
 
-.section{padding:40px; margin:40px 0}
-.grid{
-	display: grid;
-	grid-template-columns: var(left) var(right);
-	gap: var(gap);
+.section{
+	padding:40px; 
+	margin:40px 0;
+	@media screen and (max-width: 800px) {
+		padding:20px; 
+		margin:20px 0;
+	}
 }
 .btw_flex{
 	display: flex;
@@ -127,5 +174,8 @@ button{background-color: transparent;border: 0;}
 		width: 100%;
 	}
 }
-
+@keyframes ani {
+	0%{opacity: 0;}
+	100%{opacity: 1;}
+}
 `;

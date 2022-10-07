@@ -1,13 +1,13 @@
 import { useEffect ,useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { getMovieNowPlaying,getMovieUpcoming,getMovieTopRated,getMoviePopular, getDtail } from "../api";
+import { getMovieNowPlaying,getMovieUpcoming,getMovieTopRated,getMoviePopular, getDtail, getvideo, getReview } from "../api";
 import { makeImagePath } from "../Utils";
 import Sliders from "../common/Sliders";
-import {IgetAllMovies} from '../Inter'
+import {IDetail, IgetAllMovies, IReview, IYoutube} from '../Inter'
 import { AnimatePresence, motion } from "framer-motion";
 import Modal from "./Modal";
-import { useMatch } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { resize } from "../atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 const Wrap = styled.div`
@@ -58,8 +58,12 @@ const Main = styled.div`
 `;
 const Section = styled(motion.section)`
     padding: 0 40px;
-    height: 360px;
+    height: 390px;
     overflow-x: hidden;
+    @media only screen and (max-width: 1000px) {
+        padding: 0 20px;
+        height: 300px;
+    }
     @media only screen and (max-width: 630px) {
         padding: 0 20px;
         height: 250px;
@@ -75,16 +79,20 @@ const SecTitle = styled.h6`
     }
 `;
 function Home(){
+    const navigate = useNavigate();
     const movieDetailMatch = useMatch('moive/:nick/:movieId');
     const urlnick = movieDetailMatch?.params.nick;
-    const urlmovieId = movieDetailMatch?.params.movieId;
+    const urlmovieId = movieDetailMatch?.params.movieId as string;
     const [random , setRandom] = useState(0);
     const {isLoading: nowLoding , data: now} = useQuery<IgetAllMovies>(['movie','nowplay'],getMovieNowPlaying);
     const {isLoading: upLoding , data: up} = useQuery<IgetAllMovies>(['movie','upcoming'],getMovieUpcoming);
     const {isLoading: topLoding , data: top} = useQuery<IgetAllMovies>(['movie','topRated'],getMovieTopRated);
     const {isLoading: popLoding , data: pop} = useQuery<IgetAllMovies>(['movie','popular'],getMoviePopular);
+    const {isLoading:detailLoding , data:detail} = useQuery<IDetail>(['movie','modal'],()=>getDtail(urlmovieId));
+    const {isLoading:videoLoding , data:video} = useQuery<IYoutube>(['movie','video'],()=>getvideo(urlmovieId));
+    const {isLoading:reviewLoding , data:review} = useQuery<IReview>(['movie','review'],()=>getReview(urlmovieId));
     const totalArr = now?.results.concat(up?.results as [],top?.results as [],pop?.results as []);
-    const ClickModal = urlmovieId && totalArr?.find(movie => movie.id === +urlmovieId);
+    const ClickModal = urlmovieId && totalArr?.find(movie => movie.id === +urlmovieId) ;
     const loading = nowLoding || upLoding || topLoding || popLoding;
     const reWidth = useRecoilValue(resize);
     useEffect(()=>{

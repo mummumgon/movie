@@ -8,6 +8,8 @@ import { useQuery } from "react-query";
 import { getDtail, getReview, getvideo } from "../api";
 import ReactPlayer from "react-player";
 import { transform } from "typescript";
+import { useSetRecoilState } from "recoil";
+import { modalClose } from "../atom";
 const MovieDetailBox = styled.div`
     position: fixed;
     top: 0;
@@ -218,14 +220,16 @@ const boxVariants = {
   }
 
 function Modal({ props ,nick ,movieId}:any){
-    const native = useNavigate();
+    const navigate = useNavigate();
+    const {isLoading:detailLoding , data:detail} = useQuery<IDetail>(['movie','modal'],()=>getDtail(movieId));
+    const {isLoading:videoLoding , data:video} = useQuery<IYoutube>(['movie','video'],()=>getvideo(movieId));
+    const {isLoading:reviewLoding , data:review} = useQuery<IReview>(['movie','review'],()=>getReview(movieId));
+    const setClose = useSetRecoilState(modalClose);
     const movieDetailClose = () => {
+      setClose(false);
       document.body.classList.remove('hidden');
-      native('/');
-      }
-      const {isLoading:detailLoding , data:detail} = useQuery<IDetail>(['movie','modal'],()=>getDtail(movieId));
-      const {isLoading:videoLoding , data:video} = useQuery<IYoutube>(['movie','video'],()=>getvideo(movieId));
-      const {isLoading:reviewLoding , data:review} = useQuery<IReview>(['movie','review'],()=>getReview(movieId));
+      navigate('/');
+      };
       const loading = detailLoding || videoLoding || reviewLoding;
     return <>   
     <AnimatePresence>
@@ -256,17 +260,15 @@ function Modal({ props ,nick ,movieId}:any){
                 <Desc className="desc">{detail?.overview}</Desc>
                 <BtmBox className="section" style={{paddingBottom:'100px'}}>
                    <ul className="movieInfo" style={{flex:1}}>
-                      <li>평점:<span>{props.vote_average}</span></li>
-                      <li>개봉일:<span>{props.release_date}</span></li>
+                      {/* <li>평점:<span>{props.vote_average}</span></li> */}
+                      {/* <li>개봉일:<span>{props.release_date}</span></li> */}
                       <li>상영시간:<span>{detail?.runtime}</span></li>
                       <li>장르:<span>{detail?.genres.map(gen => <em key={detail.id+gen.name}>{gen.name}</em>)}</span></li>
                       <li>언어지원:<span>{detail?.spoken_languages.map((lan)=><em key={detail.id+lan.name}>{lan.name}</em>)}</span></li>
                     </ul>
                     <ul className="reviewList" style={{flex:4}}>
                       {review?.results.map((rev)=> 
-                        <li key={rev.id+nick}>
-                          {Number(rev.id.length) !== 0 ? 
-                          <>
+                          rev !== undefined ? <li key={rev.id+nick}>
                           <div className="btw_flex">{rev?.author_details.username}{rev?.author_details.name && `(${rev.author_details.name})`} <p>{rev.updated_at}</p></div>
                           <ReviewGrid>
                           { (rev?.author_details.avatar_path) === null ? '' : 
@@ -276,8 +278,7 @@ function Modal({ props ,nick ,movieId}:any){
                           }
                           <p>{rev.content}</p>
                           </ReviewGrid>
-                          </> : '리뷰가 없습니다.'}
-                        </li>
+                        </li> : '리뷰가 없습니다.' 
                   
                       )}
                     </ul>

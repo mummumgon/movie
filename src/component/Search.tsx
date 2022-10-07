@@ -4,7 +4,6 @@ import { useLocation, useMatch } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { getSearch } from "../api";
-import { allCon } from "../atom";
 import SearchList from "../common/SearchList";
 import { ISerch } from "../Inter";
 
@@ -31,7 +30,8 @@ function Search(){
     const location = useLocation();
     const keyword = new URLSearchParams(location.search).get('keyword');
     const {isLoading, data} = useQuery<ISerch>(['keyword',keyword],() => getSearch(keyword || ''));
-    const allContents = useRecoilValue(allCon);
+
+
     useEffect(()=>{
     },[keyword])
     return <div className="container">
@@ -45,13 +45,13 @@ function Search(){
                 <Title>Movie</Title>
                 <ImgBoxList className="searchImgList">
                     {data?.results.map((search)=> 
-                    search.media_type === 'movie' && <SearchList key={Date.now()+search.id}  title={search.title || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
+                    search.media_type === 'movie' && <SearchList key={Date.now()+search.id}  title={search.title || ''}  bgImg ={search.backdrop_path || search.poster_path} props={data} nick={search.media_type} movieId={search.id} keyword={keyword}/>
                     )}
                 </ImgBoxList>
                 <Title>Tv Show</Title>
                 <ImgBoxList className="searchImgList">
                     {data?.results.map((search)=> 
-                    search.media_type === 'tv' && <SearchList key={Date.now()+search.id+'aa'}  title={search.name || ''}  bgImg ={search.backdrop_path || search.poster_path} props={allContents} nick={search.media_type} movieId={search.id} keyword={keyword}/>
+                    search.media_type === 'tv' && <SearchList key={Date.now()+search.id+'aa'}  title={search.name || ''}  bgImg ={search.backdrop_path || search.poster_path} props={data} nick={search.media_type} movieId={search.id} keyword={keyword}/>
                     )}
                 </ImgBoxList>
                 </>

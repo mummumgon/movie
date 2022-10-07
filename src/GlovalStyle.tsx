@@ -130,7 +130,7 @@ button{background-color: transparent;border: 0;}
 	}
 	@media only screen and (max-width: 630px) {
 		width: 200px;
-		height: 160px;
+		height: 180px;
 	}
 
 }

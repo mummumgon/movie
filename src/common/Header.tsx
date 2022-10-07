@@ -236,13 +236,16 @@ function Header(){
         setValue('searchtext','');
         navigate(`search?keyword=${searchtext.searchtext}`);
         setHmote('100%');
+        setSerch(false);
     }
  
     const onhambugerClick = () =>{
         if(hmode === '100%'){
             setHmote('0%');
+            setSerch(true);
         }else if(hmode === '0%'){
             setHmote('100%');
+            setSerch(false);
         }
     }
 
@@ -269,7 +272,7 @@ function Header(){
         </HeadBox>
         <HeadBox className="rightbox">
             <Search onSubmit={handleSubmit(onSubmit)}>
-                <SearchInp {...register('searchtext')} initial={{scaleX:0}} animate={{scaleX:serch ? 1 : 0}} placeholder="검색어를 적어주세요"/>
+                <SearchInp {...register('searchtext')} initial={{scaleX:0}} animate={{scaleX:serch ? 1 : 0}} placeholder="검색어를 적어주세요" autoComplete="off"/>
                 <SearchBtn type='button' onClick={openInp} initial={{right:0}} animate={{right:serch ? '192px' : 0}}>
                     <svg
                         fill="currentColor"

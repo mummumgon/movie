@@ -16,8 +16,8 @@ export const resize = atom<number>({
     default:0
 });
 
-export const allCon = atom<IMovie[]>({
-    key:'contents',
-    default:[]
+export const modalClose = atom<boolean>({
+    key:'modal',
+    default:false
 });
 
